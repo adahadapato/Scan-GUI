@@ -3,14 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using HttpService.ApiInfrastructure.Client;
-using HttpService.ApiHelper.Client;
-using HttpService.ApiHelper;
-using HttpService.ApiInfrastructure;
+
 using scan.Data;
 using SCRghelp.Infrastructure;
-using HttpService.ApiInfrastructure.ApiModels;
-using scan.Models;
+
 using ScanDataApiModel = HttpService.ApiInfrastructure.ApiModels.ScanDataApiModel;
 using System.IO;
 
@@ -19,7 +15,7 @@ namespace scan.Forms
     public partial class HouseKeepingPage : Form
     {
         RegistryHelperClass _rHelper = new RegistryHelperClass();
-        List<string> _FilesList = null;
+        List<string> _FilesList = null;   
         string NTSubject = "";
         string NTSCode = "";
         bool IsFileSelected = false;
