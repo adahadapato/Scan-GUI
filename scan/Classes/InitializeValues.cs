@@ -40,6 +40,10 @@ namespace scan
                     
                     ComDefFile = "ncescan" + ComSubject.Substring(6, 1);
                     break;
+                case "GIFT":
+
+                    ComDefFile = "giftscan" + ComSubject.Substring(6, 1);
+                    break;
                 case "NEEF":
                     
                     ComDefFile = "neefscan" + ComSubject.Substring(6, 1);
@@ -56,9 +60,9 @@ namespace scan
             {
                 switch (getRegistryValues.GetRegistryValue("Scanner"))
                 {
-                    case "CD":
-                        ComCompanion = "dCompanion.companion";
-                        break;
+                    //case "CD":
+                        //ComCompanion = "dCompanion.companion";
+                       // break;
                     case "PS":
                         ComCompanion = "sCompanion.companion, " + UtilityClass.InstallationPath()+@"necoscan\companion\sCompanion.dll";
                         break;
@@ -105,6 +109,9 @@ namespace scan
                         break;
                     case 3:
                         DFile = "becescan3";
+                        break;
+                    case 4:
+                        DFile = "becescane";
                         break;
                 }
             }

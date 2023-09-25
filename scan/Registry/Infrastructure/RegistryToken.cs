@@ -66,7 +66,7 @@ namespace SCRghelp.Infrastructure
                MessageBox.Show(e.Message);
             }
         }
-
+          
         public void SetvalueEx(string regKey, string rValue)
         {
             try

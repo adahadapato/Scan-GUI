@@ -58,8 +58,10 @@ namespace scan
         }
         private async void frmnewscan_Load(object sender, EventArgs e)
         {
-            
-            btncancel.Enabled = btnok.Enabled = false;
+
+            btncancel.Enabled = false;
+            btnok.Enabled = false;
+            btnok.Text = "Wait";
             try
             {
                 InitializeListView();
@@ -67,6 +69,10 @@ namespace scan
                 BtnHouseKeeping.Enabled = false;
                 SetDefault(btnok);
                 AnswerSheet = (regHelper.ExamYear == "2000") ? 1 : 0;
+                //if (regHelper.ExamType == "BECE" && regHelper.ShortSubj.ToLower()=="eng")
+                //{
+                //    AnswerSheet = 4;
+                //}
                 await FillComboBoxes.GetStates(cbostate);
                 this.Text = this.Text + " (" + Environment.MachineName.ToUpper().Trim() + ")";// + " " + UtilityClass.ProgramVersion(); 
                 txtexam_year.Text = regHelper.ExamYear;// getRegistryValues.GetRegistryValue("examYear");
@@ -104,7 +110,7 @@ namespace scan
                     mSubjCode = current.subj_code;
 
 
-                    btnok.Enabled = true;
+                    //btnok.Enabled = true;
                     var p = current.paper;
                     foreach (var c in p)
                         cbopaper.Items.Add(c);
@@ -120,7 +126,7 @@ namespace scan
                         cbopaper.Refresh();
                         comPaper = " ";
                     }
-                    if (txtexam_type.Text.Trim() == "NEEFUSSC" || txtexam_type.Text.Trim() == "NCEE")
+                    if (txtexam_type.Text.Trim() == "NEEFUSSC" || txtexam_type.Text.Trim() == "NCEE" || txtexam_type.Text.Trim() == "GIFTED")
                     {
                         cbostate.Enabled = false;
                         cbopaper.Enabled = false;
@@ -141,8 +147,10 @@ namespace scan
                 lbldisplay.Text = await InventoryClass.GetTotalScanned();
                 _MissingFiles = await InventoryClass.GetLocalInventory();
                 BtnHouseKeeping.Enabled = Program.housekeeping;
-                
-                btncancel.Enabled = btnok.Enabled = true;
+
+                btncancel.Enabled = true;
+                btnok.Enabled = true;
+                btnok.Text = "OK";
             }
             catch (Exception ex)
             {
@@ -178,38 +186,55 @@ namespace scan
 
         private void cbostate_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ComState = cbostate.Text.Trim();
-            StateModel current = (StateModel)cbostate.SelectedValue;
-            comStateCode = current.Code.Substring(1,2);// UtilityClass.getStateCode(ComState);  
-            regHelper.StateCode = comStateCode;
+            try
+            {
+                ComState = cbostate.Text.Trim();
+                StateModel current = (StateModel)cbostate.SelectedValue;
+                comStateCode = current.Code.Substring(1, 2);// UtilityClass.getStateCode(ComState);  
+                regHelper.StateCode = comStateCode;
+            }
+            catch(Exception ex) { MessageBox.Show(ex.Message,"Select State"); }
+            
         }
 
         private void cbosubject_SelectedIndexChanged(object sender, EventArgs e)
         {
-           ComSubject = cbosubject.Text.Trim();
-          
-           cbopaper.Items.Clear();
-            SubjectModel current = (SubjectModel)cbosubject.SelectedValue;
-            ComShortSubj = current.subject;
-            ComSubjCode = current.code;
-            var p = current.paper;
-            //cbopaper.DataSource = p;
-            foreach (var s in p)
-                cbopaper.Items.Add(s);
-
-            cbopaper.Text = p[0].ToString();
-            cbopaper.Refresh();
-
-            regHelper.Subject = ComSubject;
-            regHelper.Paper = cbopaper.Text;
-            regHelper.ShortSubj = ComShortSubj;
-            regHelper.SubjCode =  current.subj_code;
-            mSubjCode = (regHelper.ExamType=="BECE" && regHelper.Job=="Obj")? current.subj_code+cbopaper.Text: current.subj_code;
-            if (regHelper.ExamType == "BECE" && regHelper.Job == "Obj")
+            try
             {
-                regHelper.SubjCode = current.code.Substring(0, 3) + cbopaper.Text;
+                ComSubject = cbosubject.Text.Trim();
+
+                cbopaper.Items.Clear();
+                SubjectModel current = (SubjectModel)cbosubject.SelectedValue;
+                ComShortSubj = current.subject;
+                ComSubjCode = current.code;
+                var p = current.paper;
+                //cbopaper.DataSource = p;
+                foreach (var s in p)
+                    cbopaper.Items.Add(s);
+
+                cbopaper.Text = p[0].ToString();
+                cbopaper.Refresh();
+
+                regHelper.Subject = ComSubject;
+                regHelper.Paper = cbopaper.Text;
+                regHelper.ShortSubj = ComShortSubj;
+                regHelper.SubjCode = current.subj_code;
+                mSubjCode = (regHelper.ExamType == "BECE" && regHelper.Job == "Obj") ? current.subj_code + cbopaper.Text : current.subj_code;
+                if (regHelper.ExamType == "BECE" && regHelper.Job == "Obj")
+                {
+                    regHelper.SubjCode = current.code.Substring(0, 3) + cbopaper.Text;
+                }
+
+                //if (regHelper.ExamType == "BECE" && regHelper.ShortSubj.ToLower() == "eng")
+                //{
+                //    AnswerSheet = 4;
+                //}
+                //btnok.Enabled = true;
             }
-            btnok.Enabled = true;
+            catch (Exception ex) 
+            { MessageBox.Show(ex.Message,"Select subject"); }
+
+           
         }
 
         internal bool VerifyTextBoxEntries()
@@ -233,7 +258,8 @@ namespace scan
                     MessageBox.Show("Subject cannot be empty", "NECO Scan", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     verify = false;
                 }
-                if (string.IsNullOrEmpty(cbostate.Text) && verify == true && (txtexam_type.Text.Substring(0, 4) != "NCEE" && txtexam_type.Text.Substring(0, 4) != "NEEF"))
+                if (string.IsNullOrEmpty(cbostate.Text) && verify == true && (txtexam_type.Text.Substring(0, 4) != "NCEE" && txtexam_type.Text.Substring(0, 4) != "NEEF"
+                                                                          && txtexam_type.Text.Substring(0, 4) != "GIFT"))
                 {
                     MessageBox.Show("State cannot be empty", "NECO Scan", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     verify = false;
@@ -274,22 +300,34 @@ namespace scan
             {
                 if (verify == true)
                 {
-                    regHelper.AnswerSheet = AnswerSheet;
                     ComExamType = txtexam_type.Text.Trim();
                     ComSubject = cbosubject.Text.Trim();
                     ComState = cbostate.Text.Trim();
                     ComExamYear = txtexam_year.Text.Trim();
                     comPaper = cbopaper.Text.Trim();
+
+                    //if (regHelper.ExamType == "BECE" && regHelper.ShortSubj.ToLower() == "eng")
+                    //{
+                    //    AnswerSheet = 4;
+                    //}
+
+                    //regHelper.AnswerSheet = AnswerSheet;
+
                     //string[] retVal = InitializeValues.StoreVals(ComExamType, txtexam_year.Text, comJob, ComSubject, comSheet, AnswerSheet, "");
                     string[] retVal = InitializeValues.StoreVals(ComExamType, comJob, ComSubject,  AnswerSheet, "");
                     ComDefFile = retVal[0];
                     //ComCompanion = retVal[1];
                     SubjectModel current = (SubjectModel)cbosubject.SelectedValue;
                     //StoreVals();
+                    if(current == null)
+                    {
+                        MessageBox.Show("Unable to select subjects for scanning","Subject",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                     ComShortSubj = current.subject;// ShortSubjects.getShortSubject(ComSubject, ComExamType.Substring(0, 4),comJob );
                     // SubjectCodes.getSubjCodes(ComSubject, comPaper,comJob, ComExamType.Substring(0, 4)  );
                     ScanType = $"{regHelper.ScanType}_{GetSystemName.SystemName()}";
-                    if (ComExamType.Contains("NEEF") || ComExamType.Contains("NCE"))
+                    if (ComExamType.Contains("NEEF") || ComExamType.Contains("NCE") || ComExamType.Contains("GIFT"))
                     {
                         ComScanDir = CreateJobDir.CreateDir(regHelper.ScanDir, "", ComSubject);
                         ComSubjCode = current.code;
@@ -370,10 +408,18 @@ namespace scan
             Application.Exit();
         }
 
-        
+        private void BtnReferesh_Click(object sender, EventArgs e)
+        {
+            Task.Run(async () =>
+            {
+                await InitializeListView();
+            });
+        }
+
         private void btnok_Click(object sender, EventArgs e)
         {
-            if(Program.housekeeping)
+            //Program.housekeeping = false; 
+            if (Program.housekeeping)
             {
                 MessageBox.Show("There is pending house keeping operation on this system\n" +
                         "Please carryout the necessary house keeiping to continue", "House keeping", MessageBoxButtons.OK, MessageBoxIcon.Error);

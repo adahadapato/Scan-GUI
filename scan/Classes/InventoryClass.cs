@@ -43,7 +43,8 @@ namespace scan.Classes
                                               //if (remoteFiles.Count == 0 && localFileList.Count == 0) return null;
                 var remoteFileList = remoteFiles.Select(r => r.FileName).ToList();
 
-                missingFiles = localFileList.Where(d => !remoteFileList.Any(r => r == Path.GetFileName(d))).ToList();
+                //missingFiles = localFileList.Where(d => !remoteFileList.Any(r => r == Path.GetFileName(d))).ToList();
+                missingFiles = localFileList.Where(d => !remoteFiles.Any(r => r.FileName == Path.GetFileName(d))).ToList();
                 if (missingFiles.Count > 0)
                 {
                     var message = $"There is/are {missingFiles.Count} files that are not saved on the server\n"

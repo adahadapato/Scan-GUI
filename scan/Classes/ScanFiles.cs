@@ -76,7 +76,7 @@ namespace scan
             return 0; ;
         }
         static RegistryHelperClass rHelper = new RegistryHelperClass();
-        public static string GetScanFileOwner(string file)
+        public static string GetScanFileOwnerName(string file)
         {
             try
             {
@@ -84,6 +84,24 @@ namespace scan
                 var input = (rHelper.Job=="Obj")? line1.Substring(122, line1.Length - 122).Trim() : line1.Substring(73, line1.Length - 73);
                 string str = new string(input.Where(c => c != '-' && (c < '0' || c > '9')).ToArray()).Trim();
                 var s = str.TrimStart('.');
+                return s.Trim();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message, "Get file size");
+            }
+            return "";
+        }
+
+        public static string GetScanFileOwnerId(string file)
+        {
+            try
+            {
+                var line1 = File.ReadLines(file).FirstOrDefault(); // gets the first line from file.
+                var idx = line1.LastIndexOf(':');
+                var input = line1.Substring(idx+1, 4).Trim();
+                //string str = new string(input.Where(c => c != '-' && (c < '0' || c > '9')).ToArray()).Trim();
+                var s = input;
                 return s.Trim();
             }
             catch (Exception ex)
@@ -112,8 +130,24 @@ namespace scan
         {
             try
             {
+                string input = "";
                 var line1 = File.ReadLines(file).FirstOrDefault(); // gets the first line from file.
-                var input = (rHelper.Job == "Obj") ? line1.Substring(122, line1.Length - 122).Trim() : line1.Substring(62, line1.Length - 62);
+                if (rHelper.Job == "Obj")
+                {
+                    input = line1.Substring(122, line1.Length - 122).Trim();
+                }
+                if(rHelper.Job == "Essay")
+                {
+                    if (rHelper.ExamType == "SSCE")
+                    {
+                      input =  line1.Substring(6,4).Trim();
+                    }
+                    else
+                    {
+                      input =  line1.Substring(62, line1.Length - 62).Trim();
+                    }
+                }
+                  
                 string str = input.Substring(0, 4);
                 var s = str.TrimStart('.');
                 return s.Trim();

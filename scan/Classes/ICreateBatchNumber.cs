@@ -19,7 +19,7 @@ namespace scan
             //System.Windows.Forms.MessageBox.Show(SubjCode, "ICreate Batch");
             try
             {
-                if (_Helper.ExamType.ToUpper().Contains("NCEE") || _Helper.ExamType.ToUpper().Contains("NEEFUSSC"))
+                if (_Helper.ExamType.ToUpper().Contains("NCEE") || _Helper.ExamType.ToUpper().Contains("NEEFUSSC") || _Helper.ExamType.ToUpper().Contains("GIFT"))
                 {
                     stateCode = "";
                 }

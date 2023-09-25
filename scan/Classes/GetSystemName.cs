@@ -12,15 +12,13 @@ namespace scan
             
             sys = Environment.MachineName.Trim();
 
-            if (sys.Length>5)// == "SYSAA")
+            if (sys == "SYSAA")
             {
-                sys = "SYS99";
+                sys = "SYS78";
             }
 
             if (sys.Length > 5 || !sys.ToUpper().Contains("SYS"))
             {
-              
-
                 System.Windows.Forms.MessageBox.Show("Invalid System name " + sys + "\n" +
                                                         " the correct format is 'SYS99' please correct the system name \n" +
                                                         " and continue ");

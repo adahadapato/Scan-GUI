@@ -117,7 +117,7 @@ namespace scan.Data
                 ITokenContainer tokenContainer = new TokenContainer();
                 IApiClient apiClient = new ApiClient(HttpClientInstance.Instance, tokenContainer);
                 INetworkClient client = new NetworkClient(apiClient);
-                var result = (GetExamType=="NCEE")? await client.GetTotalScan(GetExamType, _rHelper.OperatorId, _rHelper.ExamYear) 
+                var result = (GetExamType=="NCEE" || GetExamType == "GIFT") ? await client.GetTotalScan(GetExamType, _rHelper.OperatorId, _rHelper.ExamYear) 
                 : await client.GetTotalScan(GetExamType, _rHelper.Job, _rHelper.OperatorId, _rHelper.ExamYear);
                 if (result != null)
                 {
@@ -142,6 +142,11 @@ namespace scan.Data
                 if (_rHelper.Examination == "External")
                 {
                     examType = "NOV";
+                }
+
+                if (_rHelper.Examination == "GIFTED")
+                {
+                    examType = "GIFT";
                 }
                 return examType;
             }
@@ -177,7 +182,7 @@ namespace scan.Data
             ITokenContainer tokenContainer = new TokenContainer();
             IApiClient apiClient = new ApiClient(HttpClientInstance.Instance, tokenContainer);
             INetworkClient client = new NetworkClient(apiClient);
-            var result = (GetExamType=="NCEE")? await client.GetInventory(GetExamType, _rHelper.ExamYear, _rHelper.DeviceId) 
+            var result = (GetExamType=="NCEE" || GetExamType == "GIFT") ? await client.GetInventory(GetExamType, _rHelper.ExamYear, _rHelper.DeviceId) 
                 : await client.GetInventory(GetExamType, _rHelper.Job, _rHelper.ExamYear, _rHelper.DeviceId);
             return result;
         }

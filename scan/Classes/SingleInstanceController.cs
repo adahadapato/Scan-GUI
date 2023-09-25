@@ -103,7 +103,7 @@ namespace scan
         {
             try
             {
-                var login = UtilityClass.ShowLogin("SSCE 2022 Scanning : Operator Login");
+                var login = UtilityClass.ShowLogin("NECO Scanning : Operator Login");
                
                 if (login == null)
                 {

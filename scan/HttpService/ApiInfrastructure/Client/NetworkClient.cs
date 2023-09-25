@@ -13,9 +13,11 @@ namespace HttpService.ApiInfrastructure.Client
 
     public interface INetworkClient
     {
+        Task<SubjectResponse> GetSubjects(string exam, string job, string year, string id);
         Task<SubjectResponse> GetSubjects(string exam, string job, string year);
         Task<SubjectResponse> GetSubjects(string exam,  string year);
         Task<StateResponse> GetStates();
+        Task<StateResponse> GetStates(string year, string id);
         Task<InventoryResponse> GetInventory(string exam, string job, string year, string system);
         Task<InventoryResponse> GetInventory(string exam, string year, string system);
         Task<StaffDetailsResponse> GetStaffDetailsByNumber(string PersonnelNo);
@@ -31,6 +33,7 @@ namespace HttpService.ApiInfrastructure.Client
     {
         private const string SubjectUri = "api/subjects";
         private const string StateUri = "api/states/all";
+        private const string StateUri1 = "api/states/states/scanning/state/";
         private const string InventoryUri = "api/inventory";
         private const string StaffDetailsByNumberUri = "api/staff/getstaff";
         private const string StaffDetailsByNameUri = "api/staff/getstaffbyname";
@@ -45,6 +48,13 @@ namespace HttpService.ApiInfrastructure.Client
         public async Task<SubjectResponse> GetSubjects(string exam, string job, string year)
         {
             var content = $"{SubjectUri}/{exam}/scanning/{job}/{year}";
+            var result = await GetJsonDecodedContent<SubjectResponse, List<SubjectApiModel>>(content);
+            return result;
+        }
+
+        public async Task<SubjectResponse> GetSubjects(string exam, string job, string year, string id)
+        {
+            var content = $"{SubjectUri}/{exam}/scanning/{job}/{year}/{id}";
             var result = await GetJsonDecodedContent<SubjectResponse, List<SubjectApiModel>>(content);
             return result;
         }
@@ -106,7 +116,14 @@ namespace HttpService.ApiInfrastructure.Client
             var result = await GetJsonDecodedContent<StateResponse, List<StateApiModel>>(content);
             return result;
         }
-        
+
+        public async Task<StateResponse> GetStates(string year, string id)
+        {
+            var content = $"{StateUri}/{year}/{id}";
+            var result = await GetJsonDecodedContent<StateResponse, List<StateApiModel>>(content);
+            return result;
+        }
+
         public async Task<StaffDetailsResponse> GetStaffDetailsByNumber(string PersonnelNo)
         {
             var content = $@"{StaffDetailsByNumberUri}/{PersonnelNo}";

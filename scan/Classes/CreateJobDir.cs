@@ -110,6 +110,13 @@ namespace scan
 
                     }
                     break;
+                case "GIFTED GIFTED":
+                    if (Job == "Obj")
+                    {
+                        ScanDir = @"c:\gifted" + year;
+
+                    }
+                    break;
                 case "NEEFUSSC NEEFUSSC":
                     
                     ScanDir = @"c:\neef" + year.Substring(2, 2);

@@ -11,7 +11,7 @@
     public class HttpClientInstance
     {
         
-        private const string ManagerBaseUri = "http://10.0.1.31/ManagerApi/";
+        private const string ManagerBaseUri = "http://10.0.1.32/ManagerApi/";
 
         public static HttpClient Instance
         {

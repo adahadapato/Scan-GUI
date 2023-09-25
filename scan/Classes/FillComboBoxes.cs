@@ -19,46 +19,52 @@ namespace scan
         {
             try
             {
-                    ITokenContainer tokenContainer = new TokenContainer();
-                    IApiClient apiClient = new ApiClient(HttpClientInstance.Instance, tokenContainer);
-                    INetworkClient client = new NetworkClient(apiClient);
-                    string examType = _rHelper.ExamType;
+                ITokenContainer tokenContainer = new TokenContainer();
+                IApiClient apiClient = new ApiClient(HttpClientInstance.Instance, tokenContainer);
+                INetworkClient client = new NetworkClient(apiClient);
+                string examType = _rHelper.ExamType;
 
-                    if (_rHelper.Examination == "Internal")
-                    {
-                        examType = "SSCE";
-                    }
-                    if (_rHelper.Examination == "External")
-                    {
-                        examType = "NOV";
-                    }
-                    var result = (examType=="NCEE")? await client.GetSubjects(examType,  _rHelper.ExamYear) : await client.GetSubjects(examType, _rHelper.Job, _rHelper.ExamYear) ;
-                    
-                    if (result == null || result.Data.Count == 0)
-                    {
-                        MessageBox.Show("Unable to fetch subjects for scanning", "Fetc Subjects", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return cbo;
-                    }
-                    var Subjects = (from s in result.Data
-                                    select new SubjectModel
-                                    {
-                                        code = s.code,
-                                        subj_code =  s.subj_code,
-                                        subject = s.subject,
-                                        paper =s.paper,
-                                        descript = s.descript,
-                                        exam = s.exam
-                                    }).ToList();
-                    cbo.ValueMember = null;
-                    cbo.DisplayMember = "descript";
-                    cbo.DataSource = Subjects;
+                if (_rHelper.Examination == "Internal")
+                {
+                    examType = "SSCE";
+                }
+                if (_rHelper.Examination == "External")
+                {
+                    examType = "NOV";
+                }
+
+                if (_rHelper.Examination == "GIFTED")
+                {
+                    examType = "GIFT";
+                }
+
+                var result = (examType == "NCEE" || examType == "GIFT") ? await client.GetSubjects(examType, _rHelper.ExamYear) : await client.GetSubjects(examType, _rHelper.Job, _rHelper.ExamYear, _rHelper.OperatorId);
+
+                if (result == null || result.Data.Count == 0)
+                {
+                    MessageBox.Show("Unable to fetch subjects for scanning", "Fetc Subjects", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return cbo;
-                
-               
+                }
+                var Subjects = (from s in result.Data
+                                select new SubjectModel
+                                {
+                                    code = s.code,
+                                    subj_code = s.subj_code,
+                                    subject = s.subject,
+                                    paper = s.paper,
+                                    descript = s.descript,
+                                    exam = s.exam
+                                }).ToList();
+                cbo.ValueMember = null;
+                cbo.DisplayMember = "descript";
+                cbo.DataSource = Subjects;
+                return cbo;
+
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message,  "Fetc Subjects", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Fetc Subjects", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return cbo;
         }
@@ -82,7 +88,11 @@ namespace scan
                 {
                     examType = "NOV";
                 }
-                var result = (examType=="NCEE")? await client.GetSubjects(examType, _rHelper.ExamYear) : await client.GetSubjects(examType, _rHelper.Job, _rHelper.ExamYear);
+                if (_rHelper.Examination == "GIFTED")
+                {
+                    examType = "GIFT";
+                }
+                var result = (examType=="NCEE" || examType == "GIFT") ? await client.GetSubjects(examType, _rHelper.ExamYear) : await client.GetSubjects(examType, _rHelper.Job, _rHelper.ExamYear);
 
                 if (result == null || result.Data.Count == 0)
                 {
@@ -114,7 +124,7 @@ namespace scan
             ITokenContainer tokenContainer = new TokenContainer();
             IApiClient apiClient = new ApiClient(HttpClientInstance.Instance, tokenContainer);
             INetworkClient client = new NetworkClient(apiClient);
-            var result = await client.GetStates();
+            var result = await client.GetStates(_rHelper.ExamYear, _rHelper.OperatorId);
             if (result == null || result.Data.Count == 0)
             {
                 MessageBox.Show("Unable to fetch states for scanning", "Fetc States", MessageBoxButtons.OK, MessageBoxIcon.Error);
